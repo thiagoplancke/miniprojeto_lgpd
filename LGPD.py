@@ -63,7 +63,10 @@ def anonimizar_email(email):
     
         return usuario_anon + "@" + dominio
 
-    
+def anonimizar_telefone(telefone):
+
+    telefone_ = telefone[(len(telefone)-4):len(telefone)]
+    return telefone_  
 
 
 @medir_tempo
@@ -78,6 +81,7 @@ def LGPD(row):
     base_anonimizada["nome"] = anonimizar_nome(row.nome)
     base_anonimizada["cpf"] = anonimizar_cpf(row.cpf)
     base_anonimizada["email"] = anonimizar_email(row.email)
+    base_anonimizada["telefone"] = anonimizar_telefone(row.telefone)
     return base_anonimizada
 
 users = []
