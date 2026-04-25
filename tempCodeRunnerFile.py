@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Date, DateTime, insert, text
 from datetime import datetime
 
-
 import time
 from functools import wraps
 def medir_tempo(func):
@@ -37,44 +36,3 @@ def anonimizar_nome(nome):
     nome_ = nome.split()
     nome_[0] = nome_[0].replace(nome_[0][1:len(nome_[0])],"*"*(len(nome_[0])-1))
     nome_ = " ".join(nome_)
-
-    return nome_
-def anonimizar_cpf(cpf):
-    cpf_ = ""
-    for indice, j in enumerate(cpf):
-        if indice >= 4 and indice <= 6:
-            j = "*"
-        if indice >= 8 and indice <= 10:
-            j = "*"
-        if indice >= 12 and indice <= 13:
-            j = "*"
-        cpf_= cpf_ + j
-
-    
-
-    return cpf_
-
-
-@medir_tempo
-def LGPD(row):
-    base_original = {"id": row.id,
-            "nome":row.nome,
-            "cpf": row.cpf,
-            "email": row.email,
-            "telefone":row.telefone,
-            "data_nascimento": row.data_nascimento}
-    base_anonimizada = base_original
-    base_anonimizada["nome"] = anonimizar_nome(row.nome)
-    base_anonimizada["cpf"] = anonimizar_cpf(row.cpf)
-    return base_anonimizada
-
-users = []
-with engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM usuarios LIMIT 5;"))
-    for row in result:
-        row = LGPD(row)
-        users.append(row)
-        
-
-for user in users:
-    print(user)
