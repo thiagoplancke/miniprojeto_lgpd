@@ -32,9 +32,26 @@ usuarios = Table(
 
 metadata.create_all(engine)
 
+def anonimizar_nome(nome):
+    nome_ = nome.split()
+    nome_[0] = nome_[0].replace(nome_[0][1:len(nome_[0])],"*"*(len(nome_[0])-1))
+    nome_ = " ".join(nome_)
+
+    return nome_
+
+
+
 @medir_tempo
 def LGPD(row):
-    return row
+    base_original = {"id": row.id,
+            "nome":row.nome,
+            "cpf": row.cpf,
+            "email": row.email,
+            "telefone":row.telefone,
+            "data_nascimento": row.data_nascimento}
+    base_anonimizada = base_original
+    base_anonimizada["nome"] = anonimizar_nome(row.nome)
+    return base_anonimizada
 
 users = []
 with engine.connect() as conn:
@@ -42,6 +59,7 @@ with engine.connect() as conn:
     for row in result:
         row = LGPD(row)
         users.append(row)
+        
 
 for user in users:
     print(user)
