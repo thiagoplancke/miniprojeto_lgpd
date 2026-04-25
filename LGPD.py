@@ -55,6 +55,17 @@ def anonimizar_cpf(cpf):
     return cpf_
 
 
+def anonimizar_email(email):
+
+        usuario, dominio = email.split("@")
+        
+        usuario_anon = usuario[0] + "*" * (len(usuario) - 1)
+    
+        return usuario_anon + "@" + dominio
+
+    
+
+
 @medir_tempo
 def LGPD(row):
     base_original = {"id": row.id,
@@ -66,6 +77,7 @@ def LGPD(row):
     base_anonimizada = base_original
     base_anonimizada["nome"] = anonimizar_nome(row.nome)
     base_anonimizada["cpf"] = anonimizar_cpf(row.cpf)
+    base_anonimizada["email"] = anonimizar_email(row.email)
     return base_anonimizada
 
 users = []
