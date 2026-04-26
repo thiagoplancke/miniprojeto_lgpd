@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Date, DateTime, insert, text
 from datetime import datetime
+import csv
+import os
 
 
 import time
@@ -68,6 +70,39 @@ def anonimizar_telefone(telefone):
     telefone_ = telefone[(len(telefone)-4):len(telefone)]
     return telefone_  
 
+def criar_arquivo_csv_por_ano(user):
+    data_ = str(user["data_nascimento"])
+    filename = f'usuarios{data_[:4]}.csv'
+    file_exist = os.path.isfile(filename)
+
+    dados = [["id","Nome","CPF","Email","Telefone","Data de Nascimento"],
+             [str(user["id"]),str(user["nome"]),str(user["cpf"]),str(user["email"]),str(user["telefone"]),str(user["data_nascimento"])]]
+
+    if not file_exist:
+        with open(filename, 'w', newline='', encoding='utf-8') as arquivo:
+            escritor = csv.writer(arquivo)
+            escritor.writerows(dados)
+    else:
+        with open(filename, 'a', newline='', encoding='utf-8') as arquivo:
+            escritor = csv.writer(arquivo)
+            escritor.writerow(dados[1])
+
+
+def criar_todos(user):
+    filename = f'todos.csv'
+    file_exist = os.path.isfile(filename)
+
+    dados = [["id","Nome","CPF","Email","Telefone","Data de Nascimento"],
+             [str(user["id"]),str(user["nome"]),str(user["cpf"]),str(user["email"]),str(user["telefone"]),str(user["data_nascimento"])]]
+    if not file_exist:
+        with open(filename, 'w', newline='', encoding='utf-8') as arquivo:
+            escritor = csv.writer(arquivo)
+            escritor.writerows(dados)
+    else:
+        with open(filename, 'a', newline='', encoding='utf-8') as arquivo:
+            escritor = csv.writer(arquivo)
+            escritor.writerow(dados[1])
+
 
 @medir_tempo
 def LGPD(row):
@@ -86,7 +121,7 @@ def LGPD(row):
 
 users = []
 with engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM usuarios LIMIT 5;"))
+    result = conn.execute(text("SELECT * FROM usuarios LIMIT 10;"))
     for row in result:
         row = LGPD(row)
         users.append(row)
@@ -94,3 +129,16 @@ with engine.connect() as conn:
 
 for user in users:
     print(user)
+    print(criar_arquivo_csv_por_ano(user))
+    criar_todos(user)
+
+
+
+
+
+
+
+
+
+
+
