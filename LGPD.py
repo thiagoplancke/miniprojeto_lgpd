@@ -35,6 +35,8 @@ usuarios = Table(
 
 metadata.create_all(engine)
 
+
+
 def anonimizar_nome(nome):
     nome_ = nome.split()
     nome_[0] = nome_[0].replace(nome_[0][1:len(nome_[0])],"*"*(len(nome_[0])-1))
@@ -92,8 +94,8 @@ def criar_todos(user):
     filename = f'todos.csv'
     file_exist = os.path.isfile(filename)
 
-    dados = [["id","Nome","CPF","Email","Telefone","Data de Nascimento"],
-             [str(user["id"]),str(user["nome"]),str(user["cpf"]),str(user["email"]),str(user["telefone"]),str(user["data_nascimento"])]]
+    dados = [["Nome","CPF"],
+             [str(user["nome"]),str(user["cpf"])]]
     if not file_exist:
         with open(filename, 'w', newline='', encoding='utf-8') as arquivo:
             escritor = csv.writer(arquivo)
@@ -112,25 +114,25 @@ def LGPD(row):
             "email": row.email,
             "telefone":row.telefone,
             "data_nascimento": row.data_nascimento}
-    base_anonimizada = base_original
+    base_anonimizada = base_original.copy()
     base_anonimizada["nome"] = anonimizar_nome(row.nome)
     base_anonimizada["cpf"] = anonimizar_cpf(row.cpf)
     base_anonimizada["email"] = anonimizar_email(row.email)
     base_anonimizada["telefone"] = anonimizar_telefone(row.telefone)
-    return base_anonimizada
+    return base_anonimizada, base_original
 
 users = []
 with engine.connect() as conn:
     result = conn.execute(text("SELECT * FROM usuarios LIMIT 10;"))
     for row in result:
-        row = LGPD(row)
-        users.append(row)
+        row,org = LGPD(row)
+        users.append((row,org))
         
 
 for user in users:
-    print(user)
-    print(criar_arquivo_csv_por_ano(user))
-    criar_todos(user)
+    print(user[0])
+    medir_tempo(criar_arquivo_csv_por_ano(user[0]))
+    medir_tempo(criar_todos(user[1]))
 
 
 
