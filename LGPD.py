@@ -71,7 +71,7 @@ def anonimizar_telefone(telefone):
 
     telefone_ = telefone[(len(telefone)-4):len(telefone)]
     return telefone_  
-
+@medir_tempo
 def criar_arquivo_csv_por_ano(user):
     data_ = str(user["data_nascimento"])
     filename = f'usuarios{data_[:4]}.csv'
@@ -89,7 +89,7 @@ def criar_arquivo_csv_por_ano(user):
             escritor = csv.writer(arquivo)
             escritor.writerow(dados[1])
 
-
+@medir_tempo
 def criar_todos(user):
     filename = f'todos.csv'
     file_exist = os.path.isfile(filename)
