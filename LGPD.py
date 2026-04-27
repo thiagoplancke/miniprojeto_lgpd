@@ -1,11 +1,20 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Date, DateTime, insert, text
 from datetime import datetime
 import csv
+import logging
 import os
 
 
 import time
 from functools import wraps
+
+
+logging.basicConfig(
+    filename="tempo_execucao.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s"
+)
+
 def medir_tempo(func):
     """Decorator que mede o tempo de execução de uma função."""
     @wraps(func)
@@ -14,6 +23,7 @@ def medir_tempo(func):
         resultado = func(*args, **kwargs)
         fim = time.perf_counter()     # tempo final
         duracao = fim - inicio
+        logging.info(f"⏱ Função '{func.__name__}' executada em {duracao:.6f} segundos.")
         print(f"⏱ Função '{func.__name__}' executada em {duracao:.6f} segundos.")
         return resultado
     return wrapper
